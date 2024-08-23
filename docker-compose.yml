@@ -1,5 +1,5 @@
 version: '3.8'
-
+name: cmc
 services:
   app:
     build:
@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: huggingface_service
     ports:
-      - "${PORT}:8700"  # Read the port from .env
+      - "${PORT}:8000"  # Read the port from .env
     environment:
       - ENV=production
       - PORT=${PORT}
