@@ -1,4 +1,5 @@
 import logging
+import traceback
 from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
@@ -20,17 +21,23 @@ def initialize_model_and_tokenizer():
     # Load model with error handling
     try:
         model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
-        logger.info(f"Model loaded successfully on {device}.")
-    except torch.cuda.OutOfMemoryError:
-        logger.error("CUDA out of memory during model loading. Switching to CPU.")
+        logger.info("Model loaded successfully on %s", device)
+    except torch.cuda.OutOfMemoryError as e:
+        logger.error("CUDA out of memory during model loading: %s", str(e))
+        logger.error("Stack trace: %s", traceback.format_exc())
 
         # Clear CUDA cache to free up memory
         torch.cuda.empty_cache()
 
         # Switch to CPU
         device = torch.device("cpu")
-        model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
-        logger.info("Model reloaded successfully on CPU.")
+        try:
+            model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
+            logger.info("Model loaded successfully on CPU.")
+        except Exception as e:
+            logger.error("Failed to load model on CPU: %s", str(e))
+            logger.error("Stack trace: %s", traceback.format_exc())
+            raise
 
     return tokenizer
 
@@ -45,27 +52,37 @@ def average_pool(last_hidden_states, attention_mask):
 def get_text_embeddings(texts):
     global model, device
 
-    # Tokenize and move tensors to the correct device
-    batch_dict = tokenizer(texts, max_length=512, padding=True, truncation=True, return_tensors='pt').to(device)
-    outputs = model(**batch_dict)
+    try:
+        # Tokenize and move tensors to the correct device
+        batch_dict = tokenizer(texts, max_length=512, padding=True, truncation=True, return_tensors='pt').to(device)
+        outputs = model(**batch_dict)
 
-    # Compute embeddings using average pooling and normalize
-    embeddings = average_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-    embeddings = F.normalize(embeddings, p=2, dim=1)
+        # Compute embeddings using average pooling and normalize
+        embeddings = average_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
+        embeddings = F.normalize(embeddings, p=2, dim=1)
 
-    # Convert embeddings to list format and move back to CPU for JSON serialization
-    return embeddings.cpu().tolist()
+        # Convert embeddings to list format and move back to CPU for JSON serialization
+        return embeddings.cpu().tolist()
+    except Exception as e:
+        logger.error("Error in get_text_embeddings: %s", str(e))
+        logger.error("Stack trace: %s", traceback.format_exc())
+        raise
 
 def get_score_embeddings(texts):
-    # Get embeddings for the input texts
-    embeddings = get_text_embeddings(texts)
+    try:
+        # Get embeddings for the input texts
+        embeddings = get_text_embeddings(texts)
 
-    # Convert embeddings to tensors and move to the correct device
-    query_embeddings = torch.tensor(embeddings[:2], device=device)
-    passage_embeddings = torch.tensor(embeddings[2:], device=device)
+        # Convert embeddings to tensors and move to the correct device
+        query_embeddings = torch.tensor(embeddings[:2], device=device)
+        passage_embeddings = torch.tensor(embeddings[2:], device=device)
 
-    # Compute similarity scores
-    scores = (query_embeddings @ passage_embeddings.T) * 100
+        # Compute similarity scores
+        scores = (query_embeddings @ passage_embeddings.T) * 100
 
-    # Move scores back to CPU and convert to list format for JSON serialization
-    return scores.cpu().tolist()
+        # Move scores back to CPU and convert to list format for JSON serialization
+        return scores.cpu().tolist()
+    except Exception as e:
+        logger.error("Error in get_score_embeddings: %s", str(e))
+        logger.error("Stack trace: %s", traceback.format_exc())
+        raise
