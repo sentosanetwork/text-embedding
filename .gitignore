@@ -115,8 +115,6 @@ logs/
 # Docker
 *.log
 *.lock
-Dockerfile
-docker-compose.yml
 
 # PyCharm
 .idea/
