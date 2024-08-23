@@ -2,12 +2,33 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
 
-# Check if CUDA is available and set the device accordingly
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Define a function to initialize model and tokenizer with error handling for GPU memory issues
+def initialize_model_and_tokenizer():
+    global device, model
 
-# Load model and tokenizer and move model to the correct device
-tokenizer = AutoTokenizer.from_pretrained("intfloat/multilingual-e5-large")
-model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)  # Move model to GPU if available
+    # Set the initial device to CUDA if available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load tokenizer
+    tokenizer = AutoTokenizer.from_pretrained("intfloat/multilingual-e5-large")
+    
+    # Load model with error handling
+    try:
+        model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
+    except torch.cuda.OutOfMemoryError:
+        print("CUDA out of memory during model loading. Switching to CPU.")
+
+        # Clear CUDA cache to free up memory
+        torch.cuda.empty_cache()
+
+        # Switch to CPU
+        device = torch.device("cpu")
+        model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
+
+    return tokenizer
+
+# Initialize tokenizer and model
+tokenizer = initialize_model_and_tokenizer()
 
 def average_pool(last_hidden_states, attention_mask):
     # Mask out padding tokens
@@ -15,6 +36,8 @@ def average_pool(last_hidden_states, attention_mask):
     return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
 def get_text_embeddings(texts):
+    global model, device
+
     # Tokenize and move tensors to the correct device
     batch_dict = tokenizer(texts, max_length=512, padding=True, truncation=True, return_tensors='pt').to(device)
     outputs = model(**batch_dict)
