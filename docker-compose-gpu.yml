@@ -7,8 +7,10 @@ services:
       dockerfile: Dockerfile.cuda
     container_name: huggingface_service_gpu
     ports:
-      - "8000:8000"
+      - "${PORT}:8700"  # Read the port from .env
     environment:
+      - ENV=production
+      - PORT=${PORT}
       - MODEL_NAME=intfloat/multilingual-e5-large
     volumes:
       - .:/app
