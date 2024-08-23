@@ -15,6 +15,8 @@ This project provides a FastAPI service for generating and comparing multilingua
 - `tests/`
   - `test_main.py`: Contains test cases for the FastAPI endpoints.
 - `start.sh`: A script to set up and run the application.
+- `Dockerfile.cuda`: Docker file with cuda.
+- `docker-compose-gpu.yml`: Run docker compose with gpu cuda.
 - `requirements.txt`: Lists project dependencies.
 
 ## Prerequisites
