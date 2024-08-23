@@ -103,7 +103,7 @@ This project provides a FastAPI service for generating and comparing multilingua
 
   ```json
   {
-    "scores": [[score1, score2], [score3, score4]]
+    "data": [[score1, score2], [score3, score4]]
   }
   ```
 
@@ -140,7 +140,7 @@ This project provides a FastAPI service for generating and comparing multilingua
 
   ```json
   {
-    "embeddings": [[embedding1], [embedding2]]
+    "data": [[embedding1], [embedding2]]
   }
   ```
 

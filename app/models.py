@@ -13,13 +13,13 @@ class TextsInput(BaseModel):
     )
 
 class EmbeddingsOutput(BaseModel):
-    embeddings: List[List[float]] = Field(
+    data: List[List[float]] = Field(
         ...,
         example=[[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
     )
 
 class ScoresOutput(BaseModel):
-    scores: List[List[float]] = Field(
+    data: List[List[float]] = Field(
         ...,
         example=[[12.5, 34.2], [56.1, 78.9]]
     )

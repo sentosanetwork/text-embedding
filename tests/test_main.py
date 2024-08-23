@@ -16,7 +16,7 @@ def test_get_score_embeddings():
         }
     )
     assert response.status_code == 200
-    assert "scores" in response.json()
+    assert "data" in response.json()
 
 def test_get_text_embeddings():
     response = client.post(
@@ -29,4 +29,4 @@ def test_get_text_embeddings():
         }
     )
     assert response.status_code == 200
-    assert "embeddings" in response.json()
+    assert "data" in response.json()
