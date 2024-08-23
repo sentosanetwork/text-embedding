@@ -1,5 +1,3 @@
-To include `curl` examples in your `README.md` for interacting with the API endpoints, you can add sections that demonstrate how to make `curl` requests to the available endpoints. Here's the updated `README.md` with `curl` examples:
-
 ---
 
 # FastAPI Multilingual Embeddings API
@@ -238,5 +236,3 @@ Feel free to contribute by opening issues or submitting pull requests. For detai
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 ---
-
-This updated `README.md` includes `curl` examples for making requests to the API endpoints, which should help users interact with your FastAPI service more easily. Adjust the example data and URLs as needed based on your actual setup.
