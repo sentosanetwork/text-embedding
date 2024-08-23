@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.models import TextsInput, ScoresOutput, EmbeddingsOutput
-from app.services import get_score_embeddings, get_text_embeddings
+# from app.services import get_score_embeddings, get_text_embeddings
+from app.services_gpu import get_score_embeddings, get_text_embeddings
 
 app = FastAPI()
 
