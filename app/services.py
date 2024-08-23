@@ -1,6 +1,11 @@
+import logging
 from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
+
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Define a function to initialize model and tokenizer with error handling for GPU memory issues
 def initialize_model_and_tokenizer():
@@ -15,8 +20,9 @@ def initialize_model_and_tokenizer():
     # Load model with error handling
     try:
         model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
+        logger.info(f"Model loaded successfully on {device}.")
     except torch.cuda.OutOfMemoryError:
-        print("CUDA out of memory during model loading. Switching to CPU.")
+        logger.error("CUDA out of memory during model loading. Switching to CPU.")
 
         # Clear CUDA cache to free up memory
         torch.cuda.empty_cache()
@@ -24,6 +30,7 @@ def initialize_model_and_tokenizer():
         # Switch to CPU
         device = torch.device("cpu")
         model = AutoModel.from_pretrained("intfloat/multilingual-e5-large").to(device)
+        logger.info("Model reloaded successfully on CPU.")
 
     return tokenizer
 
