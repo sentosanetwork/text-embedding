@@ -28,8 +28,8 @@ This project provides a FastAPI service for generating and comparing multilingua
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-username/your-repo.git
-   cd your-repo
+   git clone git@github.com:sentosanetwork/text-embedding.git
+   cd text-embedding
    ```
 
 2. **Create and Activate Conda Environment**
@@ -44,14 +44,16 @@ This project provides a FastAPI service for generating and comparing multilingua
    Create or update the `requirements.txt` file with the latest versions:
 
    ```plaintext
-   fastapi>=0.95.0
-   uvicorn>=0.23.0
-   transformers>=4.32.0
-   torch>=2.1.0+cu118
-   pydantic>=2.2.0
-   pytest>=7.4.0
-   httpx>=0.24.0
-   pytest-sugar
+    fastapi==0.109.2
+    uvicorn==0.30.6
+    transformers==4.42.3
+    torch==2.4.0
+    pydantic==2.8.2
+    pytest==8.3.2
+    httpx==0.27.0
+    pytest-sugar==1.0.0
+    pytest-html==4.1.1
+    pytest-xdist==3.6.1
    ```
 
    Install the dependencies:
@@ -59,6 +61,25 @@ This project provides a FastAPI service for generating and comparing multilingua
    ```bash
    pip install -r requirements.txt
    ```
+
+## Configuration
+
+### Setting Up the `.env` File
+
+1. **Create a `.env` File**
+
+   In the root directory of your project, create a file named `.env`.
+
+2. **Configure the `.env` File**
+
+   Add the following lines to the `.env` file to configure the port on which the FastAPI server will run. You can also add other environment-specific settings here.
+
+   ```env
+   PORT=8000
+   ```
+
+   **Explanation:**
+   - `PORT` specifies the port number for the FastAPI server. You can change this value if you want to run the server on a different port.
 
 ## Running the Application
 
@@ -78,6 +99,12 @@ This project provides a FastAPI service for generating and comparing multilingua
 
    - **Swagger UI**: `http://localhost:8000/docs`
    - **ReDoc**: `http://localhost:8000/redoc`
+
+
+## Troubleshooting
+
+- **CUDA Out of Memory Errors**: If you encounter CUDA out-of-memory errors, the application will automatically switch to CPU mode. Check the logs for details.
+- **Port Conflicts**: Ensure that the port specified in the `.env` file is not in use by another application.
 
 ## API Endpoints
 
